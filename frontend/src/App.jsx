@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage        from './pages/LoginPage';
+import SignupPage       from './pages/Signuppage';
 import SearchPage       from './pages/adherent/SearchPage';
 import BookDetailPage   from './pages/adherent/BookDetailPage';
 import HistoryPage      from './pages/adherent/HistoryPage';
@@ -15,6 +16,7 @@ export default function App() {
       <Navbar />
       <Routes>
         <Route path="/login"   element={<LoginPage />} />
+        <Route path="/signup"  element={<SignupPage />} />   {/* ← NEW */}
         <Route path="/"        element={<Navigate to="/search" />} />
 
         {/* Public */}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { login as loginService } from '../services/auth.service';
 import { useAuth } from '../context/AuthContext';
 
@@ -40,6 +40,14 @@ export default function LoginPage() {
         />
         <button type="submit">Se connecter</button>
       </form>
+
+      {/* Signup link */}
+      <p style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.9rem', color: '#555' }}>
+        Pas encore de compte ?{' '}
+        <Link to="/signup" style={{ color: '#0066cc', textDecoration: 'underline' }}>
+          Créer un compte
+        </Link>
+      </p>
     </div>
   );
 }
