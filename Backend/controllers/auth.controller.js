@@ -21,21 +21,28 @@ exports.login = async (req, res) => {
         const { mot_de_passe: _, ...userData } = user;
         res.json({ success: true, message: 'Connexion réussie', data: { token, user: userData } });
     } catch (err) {
+        console.error('[login]', err);
         res.status(500).json({ success: false, message: 'Erreur serveur', error: err.message });
     }
 };
 
 exports.register = async (req, res) => {
     try {
-        const { nom, prenom, email, mot_de_passe } = req.body;
+        const { nom, prenom, email, mot_de_passe, role } = req.body;
+        if (!nom || !prenom || !email || !mot_de_passe) {
+            return res.status(400).json({ success: false, message: 'Tous les champs sont requis (nom, prenom, email, mot_de_passe).' });
+        }
+        const allowedRoles = ['adherent', 'bibliothecaire'];
+        const userRole = allowedRoles.includes(role) ? role : 'adherent';
         const existing = await UtilisateurModel.findByEmail(email);
         if (existing) {
             return res.status(409).json({ success: false, message: 'Email déjà utilisé' });
         }
         const hash = await bcrypt.hash(mot_de_passe, 12);
-        const id = await UtilisateurModel.create({ nom, prenom, email, mot_de_passe: hash, role: 'adherent' });
+        const id = await UtilisateurModel.create({ nom, prenom, email, mot_de_passe: hash, role: userRole });
         res.status(201).json({ success: true, message: 'Compte créé avec succès', data: { id_utilisateur: id } });
     } catch (err) {
+        console.error('[register]', err);
         res.status(500).json({ success: false, message: 'Erreur serveur', error: err.message });
     }
 };
@@ -47,6 +54,7 @@ exports.getMe = async (req, res) => {
         const { mot_de_passe: _, ...userData } = user;
         res.json({ success: true, data: userData });
     } catch (err) {
+        console.error('[getMe]', err);
         res.status(500).json({ success: false, message: 'Erreur serveur', error: err.message });
     }
 };
