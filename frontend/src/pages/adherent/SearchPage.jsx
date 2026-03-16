@@ -3,7 +3,39 @@ import { useState, useRef, useEffect } from "react";
 const API_URL = "http://localhost:5000/api";
 
 // ── Book Card ────────────────────────────────────────────────
-function BookCard({ book }) {
+function BookCard({ book, onUpdate }) {
+  const [msg, setMsg] = useState("");
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const handleEmprunter = async (e) => {
+    e.stopPropagation();
+    setIsDisabled(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/emprunts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id_livre: book.id_livre }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMsg("Emprunt confirmé !");
+        if (onUpdate) onUpdate(book.id_livre);
+        setTimeout(() => setMsg(""), 3000);
+      } else {
+        setMsg(data.message || "Erreur");
+        setTimeout(() => setMsg(""), 3000);
+      }
+    } catch (err) {
+      setMsg("Erreur connexion");
+      setTimeout(() => setMsg(""), 3000);
+    }
+    setIsDisabled(false);
+  };
+
   return (
     <div style={{
       background: "rgba(255,255,255,0.04)",
@@ -36,17 +68,43 @@ function BookCard({ book }) {
           </div>
         )}
       </div>
-      <div style={{
-        flexShrink: 0,
-        padding: "6px 14px",
-        borderRadius: "20px",
-        fontSize: "0.8rem",
-        fontWeight: 700,
-        background: book.disponibilite ? "rgba(80,200,120,0.15)" : "rgba(220,80,80,0.15)",
-        color: book.disponibilite ? "#50c878" : "#dc5050",
-        border: `1px solid ${book.disponibilite ? "rgba(80,200,120,0.3)" : "rgba(220,80,80,0.3)"}`,
-      }}>
-        {book.disponibilite ? "Disponible" : "Indisponible"}
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-end", flexShrink: 0 }}>
+        <div style={{
+          padding: "6px 14px",
+          borderRadius: "20px",
+          fontSize: "0.8rem",
+          fontWeight: 700,
+          background: book.disponibilite ? "rgba(80,200,120,0.15)" : "rgba(220,80,80,0.15)",
+          color: book.disponibilite ? "#50c878" : "#dc5050",
+          border: `1px solid ${book.disponibilite ? "rgba(80,200,120,0.3)" : "rgba(220,80,80,0.3)"}`,
+        }}>
+          {book.disponibilite ? "Disponible" : "Indisponible"}
+        </div>
+        {msg && (
+          <div style={{ fontSize: "0.75rem", color: "#d4af64" }}>
+            {msg}
+          </div>
+        )}
+        {book.disponibilite && (
+          <button
+            onClick={handleEmprunter}
+            disabled={isDisabled}
+            style={{
+              padding: "6px 14px",
+              borderRadius: "6px",
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              border: "none",
+              background: "rgba(212,175,100,0.3)",
+              color: "#d4af64",
+              cursor: isDisabled ? "not-allowed" : "pointer",
+              opacity: isDisabled ? 0.6 : 1,
+              transition: "all 0.2s",
+            }}
+          >
+            Emprunter
+          </button>
+        )}
       </div>
     </div>
   );
@@ -182,7 +240,7 @@ export default function SearchPage() {
     }
   };
 
-  // Extract book titles from AI response and fetch matching books
+  // ── Extract book titles from AI response and fetch matching books ─────
   const fetchMatchingBooks = async (text) => {
     try {
       // Get all books and filter by those mentioned in AI response
@@ -196,6 +254,20 @@ export default function SearchPage() {
         setAiBooks(mentioned);
       }
     } catch { /* silent */ }
+  };
+
+  // ── Update book in simple results ──────────────────────────
+  const handleSimpleUpdate = (bookId) => {
+    setSimpleResults(prev => prev.map(b => 
+      b.id_livre === bookId ? { ...b, disponibilite: false } : b
+    ));
+  };
+
+  // ── Update book in AI results ──────────────────────────────
+  const handleAIUpdate = (bookId) => {
+    setAiBooks(prev => prev.map(b => 
+      b.id_livre === bookId ? { ...b, disponibilite: false } : b
+    ));
   };
 
   return (
@@ -291,7 +363,7 @@ export default function SearchPage() {
                 <div style={{ color: "#6b6050", fontSize: "0.85rem", marginBottom: "4px" }}>
                   {simpleResults.length} résultat{simpleResults.length > 1 ? "s" : ""} trouvé{simpleResults.length > 1 ? "s" : ""}
                 </div>
-                {simpleResults.map(book => <BookCard key={book.id_livre} book={book} />)}
+                {simpleResults.map(book => <BookCard key={book.id_livre} book={book} onUpdate={handleSimpleUpdate} />)}
               </div>
             )}
 
@@ -406,7 +478,7 @@ export default function SearchPage() {
                   📚 Livres correspondants dans notre catalogue :
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {aiBooks.map(book => <BookCard key={book.id_livre} book={book} />)}
+                  {aiBooks.map(book => <BookCard key={book.id_livre} book={book} onUpdate={handleAIUpdate} />)}
                 </div>
               </div>
             )}
