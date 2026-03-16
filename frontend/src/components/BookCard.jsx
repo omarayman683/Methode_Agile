@@ -1,23 +1,13 @@
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { emprunter } from '../services/emprunts.service';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export default function BookCard({ livre, onUpdate }) {
-  const [msg, setMsg] = useState('');
+export default function BookCard({ livre }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleEmprunter = async (e) => {
+  const handleEmprunter = (e) => {
     e.preventDefault();
-    try {
-      await emprunter(livre.id_livre);
-      setMsg('Emprunt enregistré !');
-      if (onUpdate) onUpdate(livre.id_livre);
-      setTimeout(() => setMsg(''), 3000);
-    } catch (err) {
-      setMsg(err.response?.data?.message || 'Erreur emprunt');
-      setTimeout(() => setMsg(''), 3000);
-    }
+    navigate(`/livres/${livre.id_livre}/emprunt`);
   };
 
   return (
@@ -31,10 +21,10 @@ export default function BookCard({ livre, onUpdate }) {
       <p style={{ margin: '0.25rem 0', fontWeight: 'bold', color: livre.disponibilite ? 'green' : 'red' }}>
         {livre.disponibilite ? 'Disponible' : 'Indisponible'}
       </p>
-      {msg && <p style={{ margin: '0.25rem 0', fontSize: '0.8rem', color: 'green' }}>{msg}</p>}
       <Link to={`/livres/${livre.id_livre}`} style={{ marginTop: 'auto' }}>Voir détail →</Link>
       {user?.role === 'adherent' && livre.disponibilite && (
         <button onClick={handleEmprunter} style={{ marginTop: '0.5rem', padding: '0.4rem', fontSize: '0.8rem', flex: 1 }}>Emprunter</button>
-      )}    </div>
+      )}
+    </div>
   );
 }
