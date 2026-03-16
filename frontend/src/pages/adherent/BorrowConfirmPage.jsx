@@ -23,10 +23,6 @@ export default function BorrowConfirmPage() {
   const [duration, setDuration] = useState(7);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
-  const [confirmed, setConfirmed] = useState(false);
-  const [pickupCode] = useState(() =>
-    Math.random().toString(36).substring(2, 10).toUpperCase()
-  );
 
   const startDate = new Date();
   const endDate = new Date();
@@ -39,8 +35,17 @@ export default function BorrowConfirmPage() {
   const handleConfirm = async () => {
     setLoading(true);
     try {
-      await emprunter(parseInt(id), duration);
-      setConfirmed(true);
+      const res = await emprunter(parseInt(id), duration);
+      const idEmprunt = res.data.data.id_emprunt;
+      navigate('/emprunt/confirmation', {
+        state: {
+          confirmCode: 'EMP-' + String(idEmprunt).padStart(5, '0'),
+          titre: livre.titre,
+          duration,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        },
+      });
     } catch (err) {
       setMsg(err.response?.data?.message || "Erreur lors de l'emprunt");
     } finally {
@@ -49,42 +54,6 @@ export default function BorrowConfirmPage() {
   };
 
   if (!livre) return <p style={{ padding: '2rem' }}>Chargement…</p>;
-
-  // ── Success screen ──────────────────────────────────────────────
-  if (confirmed) {
-    return (
-      <div style={s.container}>
-        <div style={s.card}>
-          <div style={s.successIcon}>✓</div>
-          <h2 style={{ textAlign: 'center', color: '#2e7d32' }}>Emprunt confirmé !</h2>
-          <p style={{ textAlign: 'center', color: '#555' }}>{livre.titre}</p>
-
-          <div style={s.codeBlock}>
-            <p style={s.codeHint}>Votre code de récupération</p>
-            <div style={s.codeValue}>{pickupCode}</div>
-            <p style={s.codeNote}>Présentez ce code au comptoir de la bibliothèque pour récupérer votre livre</p>
-          </div>
-
-          <div style={s.summaryRow}>
-            <span>Période d'emprunt</span>
-            <span>{formatDate(startDate)} → {formatDate(endDate)}</span>
-          </div>
-          <div style={s.summaryRow}>
-            <span>Durée</span>
-            <span>{duration} jours</span>
-          </div>
-          <div style={s.summaryRow}>
-            <span>Total payé</span>
-            <strong style={{ color: '#2563eb' }}>{duration * PRICE_PER_DAY}€</strong>
-          </div>
-
-          <button style={s.confirmBtn} onClick={() => navigate('/historique')}>
-            Voir mes emprunts
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   // ── Selection screen ────────────────────────────────────────────
   return (
@@ -151,12 +120,6 @@ export default function BorrowConfirmPage() {
 
         {msg && <p style={s.errorMsg}>{msg}</p>}
 
-        {/* Pickup code preview */}
-        <div style={s.codePreview}>
-          <span style={s.codePreviewLabel}>Code de récupération qui vous sera attribué :</span>
-          <span style={s.codePreviewValue}>{pickupCode}</span>
-        </div>
-
         <div style={s.btnRow}>
           <button onClick={() => navigate(-1)} style={s.cancelBtn} disabled={loading}>
             Annuler
@@ -216,15 +179,6 @@ const s = {
   priceValue: { fontWeight: '800', fontSize: '1.6rem', color: '#2563eb' },
   priceNote: { color: '#888', fontSize: '0.85rem', margin: '0.5rem 0 0' },
   errorMsg: { color: 'red', marginTop: '1rem', fontWeight: '600' },
-  codePreview: {
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    marginTop: '1.5rem', padding: '0.75rem 1rem', background: '#f5f5f5', borderRadius: '6px',
-  },
-  codePreviewLabel: { fontSize: '0.85rem', color: '#666' },
-  codePreviewValue: {
-    fontFamily: 'monospace', fontWeight: '700', fontSize: '1rem',
-    color: '#2563eb', letterSpacing: '2px',
-  },
   btnRow: { display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1.5rem' },
   cancelBtn: {
     padding: '0.75rem 1.5rem', background: '#eee', border: 'none',
@@ -233,26 +187,5 @@ const s = {
   confirmBtn: {
     padding: '0.75rem 1.5rem', background: '#4CAF50', color: 'white',
     border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '1rem', fontWeight: '600',
-  },
-  // success screen
-  successIcon: {
-    width: '60px', height: '60px', background: '#e8f5e9', borderRadius: '50%',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: '2rem', color: '#2e7d32', margin: '0 auto 1rem',
-  },
-  codeBlock: {
-    background: '#e3f2fd', borderRadius: '8px', padding: '1.5rem',
-    textAlign: 'center', margin: '1.5rem 0',
-  },
-  codeHint: { fontWeight: '600', color: '#444', marginBottom: '0.75rem' },
-  codeValue: {
-    fontFamily: 'monospace', fontWeight: '800', fontSize: '2rem',
-    color: '#2563eb', letterSpacing: '4px', padding: '0.5rem',
-    border: '2px solid #2563eb', borderRadius: '6px', background: 'white', display: 'inline-block',
-  },
-  codeNote: { fontSize: '0.85rem', color: '#666', marginTop: '0.75rem', fontStyle: 'italic' },
-  summaryRow: {
-    display: 'flex', justifyContent: 'space-between',
-    padding: '0.6rem 0', borderBottom: '1px solid #f0f0f0', fontSize: '0.95rem',
   },
 };

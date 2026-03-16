@@ -1,39 +1,15 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:5000/api";
 
 // ── Book Card ────────────────────────────────────────────────
-function BookCard({ book, onUpdate }) {
-  const [msg, setMsg] = useState("");
-  const [isDisabled, setIsDisabled] = useState(false);
+function BookCard({ book }) {
+  const navigate = useNavigate();
 
-  const handleEmprunter = async (e) => {
+  const handleEmprunter = (e) => {
     e.stopPropagation();
-    setIsDisabled(true);
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/emprunts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ id_livre: book.id_livre }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setMsg("Emprunt confirmé !");
-        if (onUpdate) onUpdate(book.id_livre);
-        setTimeout(() => setMsg(""), 3000);
-      } else {
-        setMsg(data.message || "Erreur");
-        setTimeout(() => setMsg(""), 3000);
-      }
-    } catch (err) {
-      setMsg("Erreur connexion");
-      setTimeout(() => setMsg(""), 3000);
-    }
-    setIsDisabled(false);
+    navigate(`/livres/${book.id_livre}/emprunt`);
   };
 
   return (
@@ -80,15 +56,9 @@ function BookCard({ book, onUpdate }) {
         }}>
           {book.disponibilite ? "Disponible" : "Indisponible"}
         </div>
-        {msg && (
-          <div style={{ fontSize: "0.75rem", color: "#d4af64" }}>
-            {msg}
-          </div>
-        )}
         {book.disponibilite && (
           <button
             onClick={handleEmprunter}
-            disabled={isDisabled}
             style={{
               padding: "6px 14px",
               borderRadius: "6px",
@@ -97,8 +67,7 @@ function BookCard({ book, onUpdate }) {
               border: "none",
               background: "rgba(212,175,100,0.3)",
               color: "#d4af64",
-              cursor: isDisabled ? "not-allowed" : "pointer",
-              opacity: isDisabled ? 0.6 : 1,
+              cursor: "pointer",
               transition: "all 0.2s",
             }}
           >
@@ -256,20 +225,6 @@ export default function SearchPage() {
     } catch { /* silent */ }
   };
 
-  // ── Update book in simple results ──────────────────────────
-  const handleSimpleUpdate = (bookId) => {
-    setSimpleResults(prev => prev.map(b => 
-      b.id_livre === bookId ? { ...b, disponibilite: false } : b
-    ));
-  };
-
-  // ── Update book in AI results ──────────────────────────────
-  const handleAIUpdate = (bookId) => {
-    setAiBooks(prev => prev.map(b => 
-      b.id_livre === bookId ? { ...b, disponibilite: false } : b
-    ));
-  };
-
   return (
     <div style={{
       minHeight: "100vh",
@@ -363,7 +318,7 @@ export default function SearchPage() {
                 <div style={{ color: "#6b6050", fontSize: "0.85rem", marginBottom: "4px" }}>
                   {simpleResults.length} résultat{simpleResults.length > 1 ? "s" : ""} trouvé{simpleResults.length > 1 ? "s" : ""}
                 </div>
-                {simpleResults.map(book => <BookCard key={book.id_livre} book={book} onUpdate={handleSimpleUpdate} />)}
+                {simpleResults.map(book => <BookCard key={book.id_livre} book={book} />)}
               </div>
             )}
 
@@ -478,7 +433,7 @@ export default function SearchPage() {
                   📚 Livres correspondants dans notre catalogue :
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {aiBooks.map(book => <BookCard key={book.id_livre} book={book} onUpdate={handleAIUpdate} />)}
+                  {aiBooks.map(book => <BookCard key={book.id_livre} book={book} />)}
                 </div>
               </div>
             )}

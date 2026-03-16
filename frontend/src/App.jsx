@@ -4,6 +4,7 @@ import SignupPage       from './pages/Signuppage';
 import SearchPage       from './pages/adherent/SearchPage';
 import BookDetailPage   from './pages/adherent/BookDetailPage';
 import BorrowConfirmPage from './pages/adherent/BorrowConfirmPage';
+import BorrowSuccessPage from './pages/adherent/BorrowSuccessPage';
 import HistoryPage      from './pages/adherent/HistoryPage';
 import ManageBooksPage  from './pages/bibliothecaire/ManageBooksPage';
 import ManageLoansPage  from './pages/bibliothecaire/ManageLoansPage';
@@ -26,6 +27,11 @@ export default function App() {
         <Route path="/livres/:id/emprunt" element={
           <ProtectedRoute roles={['adherent']}>
             <BorrowConfirmPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/emprunt/confirmation" element={
+          <ProtectedRoute roles={['adherent']}>
+            <BorrowSuccessPage />
           </ProtectedRoute>
         } />
 
