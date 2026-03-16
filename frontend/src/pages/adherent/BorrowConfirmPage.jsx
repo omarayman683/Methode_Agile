@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getLivreById } from '../../services/livres.service';
 import { emprunter } from '../../services/emprunts.service';
 
-const PRICE_PER_DAY = 1; // 1€ per day
+const PRICE_PER_DAY = 1;
 
 const durationOptions = [
   { label: '1 semaine', days: 7 },
@@ -55,7 +55,6 @@ export default function BorrowConfirmPage() {
 
   if (!livre) return <p style={{ padding: '2rem' }}>Chargement…</p>;
 
-  // ── Selection screen ────────────────────────────────────────────
   return (
     <div style={s.container}>
       <button onClick={() => navigate(-1)} style={s.backBtn}>← Retour</button>
@@ -63,7 +62,6 @@ export default function BorrowConfirmPage() {
       <div style={s.card}>
         <h2 style={s.title}>Emprunter ce livre</h2>
 
-        {/* Book info */}
         <div style={s.bookRow}>
           <div>
             <div style={s.bookTitle}>{livre.titre}</div>
@@ -74,7 +72,6 @@ export default function BorrowConfirmPage() {
 
         <hr style={s.hr} />
 
-        {/* Duration picker */}
         <p style={s.sectionLabel}>Choisissez la durée d'emprunt</p>
         <div style={s.durationGrid}>
           {durationOptions.map(opt => (
@@ -94,7 +91,6 @@ export default function BorrowConfirmPage() {
 
         <hr style={s.hr} />
 
-        {/* Date range */}
         <p style={s.sectionLabel}>Période de disponibilité</p>
         <div style={s.dateRange}>
           <div style={s.dateBox}>
@@ -110,7 +106,6 @@ export default function BorrowConfirmPage() {
 
         <hr style={s.hr} />
 
-        {/* Price summary */}
         <div style={s.priceSummary}>
           <span style={s.priceLabel}>Total</span>
           <span style={s.priceValue}>{duration * PRICE_PER_DAY}€</span>
@@ -125,7 +120,7 @@ export default function BorrowConfirmPage() {
             Annuler
           </button>
           <button onClick={handleConfirm} style={s.confirmBtn} disabled={loading}>
-            {loading ? 'Traitement...' : 'Confirmer l\'emprunt'}
+            {loading ? 'Traitement...' : "Confirmer l'emprunt"}
           </button>
         </div>
       </div>
@@ -137,27 +132,28 @@ const s = {
   container: { padding: '2rem', maxWidth: '560px', margin: '0 auto' },
   backBtn: {
     marginBottom: '1rem', padding: '0.4rem 1rem',
-    background: '#f0f0f0', border: 'none', borderRadius: '4px', cursor: 'pointer',
+    background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+    borderRadius: '4px', cursor: 'pointer', color: 'var(--text)',
   },
   card: {
-    background: 'white', borderRadius: '10px',
+    background: 'var(--bg-card)', borderRadius: '10px',
     boxShadow: '0 2px 12px rgba(0,0,0,0.1)', padding: '2rem',
   },
-  title: { margin: '0 0 1.5rem', fontSize: '1.5rem', color: '#222' },
+  title: { margin: '0 0 1.5rem', fontSize: '1.5rem', color: 'var(--text)' },
   bookRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' },
-  bookTitle: { fontSize: '1.1rem', fontWeight: '700', color: '#222' },
-  bookAuthor: { color: '#666', marginTop: '0.25rem' },
+  bookTitle: { fontSize: '1.1rem', fontWeight: '700', color: 'var(--text)' },
+  bookAuthor: { color: 'var(--text-muted)', marginTop: '0.25rem' },
   badge: {
     background: '#e8f5e9', color: '#2e7d32', fontSize: '0.8rem',
     fontWeight: '600', padding: '0.25rem 0.6rem', borderRadius: '20px',
   },
-  hr: { border: 'none', borderTop: '1px solid #eee', margin: '1.5rem 0' },
-  sectionLabel: { fontWeight: '600', color: '#444', marginBottom: '1rem' },
+  hr: { border: 'none', borderTop: '1px solid var(--border)', margin: '1.5rem 0' },
+  sectionLabel: { fontWeight: '600', color: 'var(--text)', marginBottom: '1rem' },
   durationGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' },
   durBtn: {
     display: 'flex', flexDirection: 'column', alignItems: 'center',
-    padding: '0.85rem', border: '2px solid #ddd', borderRadius: '8px',
-    background: 'white', cursor: 'pointer', gap: '0.2rem',
+    padding: '0.85rem', border: '2px solid var(--border)', borderRadius: '8px',
+    background: 'var(--bg-card)', cursor: 'pointer', gap: '0.2rem', color: 'var(--text)',
   },
   durBtnActive: { border: '2px solid #2563eb', background: '#2563eb', color: 'white' },
   durLabel: { fontWeight: '600', fontSize: '0.95rem' },
@@ -168,21 +164,22 @@ const s = {
     flex: 1, padding: '1rem', border: '2px solid #2563eb',
     borderRadius: '8px', textAlign: 'center',
   },
-  dateBoxLabel: { fontSize: '0.75rem', color: '#888', marginBottom: '0.4rem', fontWeight: '600', textTransform: 'uppercase' },
+  dateBoxLabel: { fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.4rem', fontWeight: '600', textTransform: 'uppercase' },
   dateBoxValue: { fontWeight: '700', color: '#2563eb' },
-  dateArrow: { fontSize: '1.5rem', color: '#999' },
+  dateArrow: { fontSize: '1.5rem', color: 'var(--text-muted)' },
   priceSummary: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: '1rem', background: '#f0f7ff', borderRadius: '8px',
+    padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '8px',
   },
-  priceLabel: { fontWeight: '600', fontSize: '1.1rem' },
+  priceLabel: { fontWeight: '600', fontSize: '1.1rem', color: 'var(--text)' },
   priceValue: { fontWeight: '800', fontSize: '1.6rem', color: '#2563eb' },
-  priceNote: { color: '#888', fontSize: '0.85rem', margin: '0.5rem 0 0' },
+  priceNote: { color: 'var(--text-muted)', fontSize: '0.85rem', margin: '0.5rem 0 0' },
   errorMsg: { color: 'red', marginTop: '1rem', fontWeight: '600' },
   btnRow: { display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1.5rem' },
   cancelBtn: {
-    padding: '0.75rem 1.5rem', background: '#eee', border: 'none',
-    borderRadius: '6px', cursor: 'pointer', fontSize: '1rem',
+    padding: '0.75rem 1.5rem', background: 'var(--bg-secondary)',
+    border: '1px solid var(--border)', borderRadius: '6px',
+    cursor: 'pointer', fontSize: '1rem', color: 'var(--text)',
   },
   confirmBtn: {
     padding: '0.75rem 1.5rem', background: '#4CAF50', color: 'white',

@@ -60,8 +60,8 @@ export default function BorrowSuccessPage() {
 const s = {
   container: { padding: '2rem', maxWidth: '560px', margin: '0 auto' },
   card: {
-    background: 'white', borderRadius: '10px',
-    boxShadow: '0 2px 12px rgba(0,0,0,0.1)', padding: '2rem',
+    background: 'var(--bg-card)', borderRadius: '10px',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.12)', padding: '2rem',
   },
   successIcon: {
     width: '60px', height: '60px', background: '#e8f5e9', borderRadius: '50%',
@@ -69,21 +69,22 @@ const s = {
     fontSize: '2rem', color: '#2e7d32', margin: '0 auto 1rem',
   },
   title: { textAlign: 'center', color: '#2e7d32', margin: '0 0 0.5rem' },
-  subtitle: { textAlign: 'center', color: '#555', margin: '0 0 1.5rem' },
+  subtitle: { textAlign: 'center', color: 'var(--text-muted)', margin: '0 0 1.5rem' },
   codeBlock: {
-    background: '#e3f2fd', borderRadius: '8px', padding: '1.5rem',
+    background: 'var(--bg-secondary)', borderRadius: '8px', padding: '1.5rem',
     textAlign: 'center', margin: '1.5rem 0',
   },
-  codeHint: { fontWeight: '600', color: '#444', marginBottom: '0.75rem', margin: '0 0 0.75rem' },
+  codeHint: { fontWeight: '600', color: 'var(--text)', margin: '0 0 0.75rem' },
   codeValue: {
     fontFamily: 'monospace', fontWeight: '800', fontSize: '2rem',
     color: '#2563eb', letterSpacing: '4px', padding: '0.5rem',
-    border: '2px solid #2563eb', borderRadius: '6px', background: 'white', display: 'inline-block',
+    border: '2px solid #2563eb', borderRadius: '6px',
+    background: 'var(--bg-card)', display: 'inline-block',
   },
-  codeNote: { fontSize: '0.85rem', color: '#666', marginTop: '0.75rem', fontStyle: 'italic' },
+  codeNote: { fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.75rem', fontStyle: 'italic' },
   summaryRow: {
-    display: 'flex', justifyContent: 'space-between',
-    padding: '0.6rem 0', borderBottom: '1px solid #f0f0f0', fontSize: '0.95rem',
+    display: 'flex', justifyContent: 'space-between', color: 'var(--text)',
+    padding: '0.6rem 0', borderBottom: '1px solid var(--border)', fontSize: '0.95rem',
   },
   btn: {
     marginTop: '1.5rem', width: '100%', padding: '0.85rem',

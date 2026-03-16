@@ -15,7 +15,7 @@ function BookCard({ book }) {
   return (
     <div style={{
       background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.1)",
+      border: "1px solid var(--border)",
       borderRadius: "12px",
       padding: "18px 22px",
       display: "flex",
@@ -24,14 +24,14 @@ function BookCard({ book }) {
       gap: "16px",
       transition: "background 0.2s",
     }}
-    onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+    onMouseEnter={e => e.currentTarget.style.background = "var(--bg-secondary)"}
     onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
     >
       <div>
-        <div style={{ fontWeight: 700, fontSize: "1rem", color: "#f0ece4", marginBottom: "4px" }}>
+        <div style={{ fontWeight: 700, fontSize: "1rem", color: "var(--text)", marginBottom: "4px" }}>
           {book.titre}
         </div>
-        <div style={{ fontSize: "0.85rem", color: "#a09880" }}>
+        <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
           {book.auteur} {book.date_publication ? `· ${new Date(book.date_publication).getFullYear()}` : ""}
         </div>
         {book.categorie && (
@@ -204,7 +204,7 @@ export default function SearchPage() {
       }
 
     } catch (err) {
-      setAiError("Impossible de contacter le serveur ou Ollama n'est pas lancé.");
+      setAiError("Impossible de contacter le serveur ou l'IA n'est pas disponible.");
       setAiLoading(false);
     }
   };
@@ -228,9 +228,9 @@ export default function SearchPage() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#0f0e0b",
+      background: "var(--bg)",
       fontFamily: "'Georgia', 'Times New Roman', serif",
-      color: "#f0ece4",
+      color: "var(--text)",
       padding: "48px 24px",
     }}>
       <style>{`
@@ -238,7 +238,6 @@ export default function SearchPage() {
         @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
         @keyframes spin { to{transform:rotate(360deg)} }
         * { box-sizing: border-box; }
-        ::placeholder { color: #5a5240; }
         input:focus { outline: none; }
         button:hover { opacity: 0.85; cursor: pointer; }
       `}</style>
@@ -247,10 +246,10 @@ export default function SearchPage() {
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "48px" }}>
-          <div style={{ fontSize: "2.6rem", fontWeight: 700, letterSpacing: "-0.5px", color: "#f0ece4" }}>
+          <div style={{ fontSize: "2.6rem", fontWeight: 700, letterSpacing: "-0.5px", color: "var(--text)" }}>
             Bibliothèque
           </div>
-          <div style={{ color: "#6b6050", fontSize: "1rem", marginTop: "6px", fontStyle: "italic" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "1rem", marginTop: "6px", fontStyle: "italic" }}>
             Recherchez parmi nos ouvrages
           </div>
         </div>
@@ -258,11 +257,11 @@ export default function SearchPage() {
         {/* Tab Switch */}
         <div style={{
           display: "flex",
-          background: "rgba(255,255,255,0.04)",
+          background: "var(--bg-secondary)",
           borderRadius: "12px",
           padding: "4px",
           marginBottom: "32px",
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "1px solid var(--border)",
         }}>
           {[
             { key: "simple", label: "🔍 Recherche simple" },
@@ -292,9 +291,9 @@ export default function SearchPage() {
                 placeholder="Titre, auteur ou catégorie..."
                 style={{
                   flex: 1, padding: "14px 18px",
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: "10px", color: "#f0ece4",
+                  background: "var(--input-bg)",
+                  border: "1px solid var(--input-border)",
+                  borderRadius: "10px", color: "var(--text)",
                   fontSize: "1rem", fontFamily: "inherit",
                 }}
               />
@@ -315,7 +314,7 @@ export default function SearchPage() {
 
             {simpleResults.length > 0 && (
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                <div style={{ color: "#6b6050", fontSize: "0.85rem", marginBottom: "4px" }}>
+                <div style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: "4px" }}>
                   {simpleResults.length} résultat{simpleResults.length > 1 ? "s" : ""} trouvé{simpleResults.length > 1 ? "s" : ""}
                 </div>
                 {simpleResults.map(book => <BookCard key={book.id_livre} book={book} />)}
@@ -323,7 +322,7 @@ export default function SearchPage() {
             )}
 
             {!simpleLoading && simpleResults.length === 0 && simpleQuery && !simpleError && (
-              <div style={{ textAlign: "center", color: "#5a5240", padding: "40px", fontStyle: "italic" }}>
+              <div style={{ textAlign: "center", color: "var(--text-muted)", padding: "40px", fontStyle: "italic" }}>
                 Aucun livre trouvé pour « {simpleQuery} »
               </div>
             )}
@@ -351,9 +350,9 @@ export default function SearchPage() {
                 rows={3}
                 style={{
                   width: "100%", padding: "14px 18px",
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: "10px", color: "#f0ece4",
+                  background: "var(--input-bg)",
+                  border: "1px solid var(--input-border)",
+                  borderRadius: "10px", color: "var(--text)",
                   fontSize: "1rem", fontFamily: "inherit",
                   resize: "vertical", marginBottom: "10px",
                 }}
@@ -373,8 +372,8 @@ export default function SearchPage() {
             {/* AI streaming response box */}
             {(aiText || aiLoading) && (
               <div style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.1)",
+                background: "var(--bg-secondary)",
+                border: "1px solid var(--border)",
                 borderRadius: "12px", padding: "20px 24px",
                 marginBottom: "24px",
                 animation: "fadeIn 0.3s ease",
@@ -388,7 +387,7 @@ export default function SearchPage() {
                 </div>
 
                 {aiLoading && !aiText && (
-                  <div style={{ display: "flex", gap: "6px", alignItems: "center", color: "#6b6050" }}>
+                  <div style={{ display: "flex", gap: "6px", alignItems: "center", color: "var(--text-muted)" }}>
                     <div style={{
                       width: "16px", height: "16px",
                       border: "2px solid #d4af64",
@@ -396,13 +395,13 @@ export default function SearchPage() {
                       borderRadius: "50%",
                       animation: "spin 0.8s linear infinite",
                     }} />
-                    Connexion à Ollama...
+                    Connexion à l'IA...
                   </div>
                 )}
 
                 {aiText && (
                   <div style={{
-                    lineHeight: "1.75", color: "#d4c9b0",
+                    lineHeight: "1.75", color: "var(--text)",
                     fontSize: "0.98rem", whiteSpace: "pre-wrap",
                   }}>
                     {aiText}
@@ -420,16 +419,13 @@ export default function SearchPage() {
                 color: "#dc5050", fontSize: "0.9rem", marginBottom: "20px",
               }}>
                 ⚠️ {aiError}
-                <div style={{ marginTop: "8px", fontSize: "0.8rem", color: "#a06060" }}>
-                  Assurez-vous qu'Ollama est lancé : ouvrez un terminal et tapez <code>ollama serve</code>
-                </div>
               </div>
             )}
 
             {/* Books suggested by AI */}
             {aiDone && aiBooks.length > 0 && (
               <div style={{ animation: "fadeIn 0.4s ease" }}>
-                <div style={{ color: "#6b6050", fontSize: "0.85rem", marginBottom: "12px" }}>
+                <div style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: "12px" }}>
                   📚 Livres correspondants dans notre catalogue :
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -440,7 +436,7 @@ export default function SearchPage() {
 
             {aiDone && aiBooks.length === 0 && !aiError && (
               <div style={{
-                textAlign: "center", color: "#5a5240",
+                textAlign: "center", color: "var(--text-muted)",
                 padding: "20px", fontStyle: "italic", fontSize: "0.9rem"
               }}>
                 Aucun livre correspondant trouvé dans le catalogue actuel.

@@ -1,0 +1,59 @@
+:root {
+  --bg:           #f4f4f4;
+  --bg-secondary: #eeeeee;
+  --bg-card:      #ffffff;
+  --text:         #222222;
+  --text-muted:   #666666;
+  --border:       #dddddd;
+  --input-bg:     #ffffff;
+  --input-border: #cccccc;
+  --table-head:   #f0f0f0;
+  --nav-bg:       #1a1a2e;
+}
+
+html.dark {
+  --bg:           #0f0e0b;
+  --bg-secondary: #1a1916;
+  --bg-card:      #1e1c18;
+  --text:         #f0ece4;
+  --text-muted:   #a09880;
+  --border:       rgba(255, 255, 255, 0.12);
+  --input-bg:     rgba(255, 255, 255, 0.06);
+  --input-border: rgba(255, 255, 255, 0.15);
+  --table-head:   #1e1c18;
+  --nav-bg:       #0a0a18;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.25s, color 0.25s;
+  font-family: sans-serif;
+}
+
+input, textarea, select {
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+table {
+  border-color: var(--border);
+}
+
+th, td {
+  border-color: var(--border);
+}

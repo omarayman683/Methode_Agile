@@ -22,8 +22,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ maxWidth: '360px', margin: '5rem auto', padding: '2rem', border: '1px solid #ddd', borderRadius: '8px' }}>
-      <h2 style={{ marginTop: 0 }}>Connexion</h2>
+    <div style={{
+      maxWidth: '360px', margin: '5rem auto', padding: '2rem',
+      border: '1px solid var(--border)', borderRadius: '8px',
+      background: 'var(--bg-card)',
+    }}>
+      <h2 style={{ marginTop: 0, color: 'var(--text)' }}>Connexion</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <input
@@ -41,8 +45,7 @@ export default function LoginPage() {
         <button type="submit">Se connecter</button>
       </form>
 
-      {/* Signup link */}
-      <p style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.9rem', color: '#555' }}>
+      <p style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
         Pas encore de compte ?{' '}
         <Link to="/signup" style={{ color: '#0066cc', textDecoration: 'underline' }}>
           Créer un compte

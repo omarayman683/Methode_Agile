@@ -14,10 +14,10 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: '2rem', background: 'var(--bg)', minHeight: '100vh', color: 'var(--text)' }}>
       <h2>Mes emprunts</h2>
       <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%', marginBottom: '2rem' }}>
-        <thead style={{ background: '#f5f5f5' }}>
+        <thead style={{ background: 'var(--table-head)' }}>
           <tr>
             <th>Titre</th><th>Emprunté le</th><th>Retour prévu</th><th>Statut</th>
           </tr>
@@ -42,7 +42,7 @@ export default function HistoryPage() {
         <p>Aucune amende.</p>
       ) : (
         <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
-          <thead style={{ background: '#f5f5f5' }}>
+          <thead style={{ background: 'var(--table-head)' }}>
             <tr><th>Livre</th><th>Montant</th><th>Payée</th></tr>
           </thead>
           <tbody>
