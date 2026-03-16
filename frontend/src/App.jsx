@@ -3,6 +3,7 @@ import LoginPage        from './pages/LoginPage';
 import SignupPage       from './pages/Signuppage';
 import SearchPage       from './pages/adherent/SearchPage';
 import BookDetailPage   from './pages/adherent/BookDetailPage';
+import BorrowConfirmPage from './pages/adherent/BorrowConfirmPage';
 import HistoryPage      from './pages/adherent/HistoryPage';
 import ManageBooksPage  from './pages/bibliothecaire/ManageBooksPage';
 import ManageLoansPage  from './pages/bibliothecaire/ManageLoansPage';
@@ -22,6 +23,11 @@ export default function App() {
         {/* Public */}
         <Route path="/search"      element={<SearchPage />} />
         <Route path="/livres/:id"  element={<BookDetailPage />} />
+        <Route path="/livres/:id/emprunt" element={
+          <ProtectedRoute roles={['adherent']}>
+            <BorrowConfirmPage />
+          </ProtectedRoute>
+        } />
 
         {/* Adhérent */}
         <Route path="/historique" element={

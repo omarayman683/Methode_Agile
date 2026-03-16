@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getLivreById } from '../../services/livres.service';
-import { emprunter } from '../../services/emprunts.service';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
@@ -16,14 +15,8 @@ export default function BookDetailPage() {
     getLivreById(id).then(res => setLivre(res.data.data));
   }, [id]);
 
-  const handleEmprunter = async () => {
-    try {
-      await emprunter(parseInt(id));
-      setMsg('Emprunt enregistré !');
-      setLivre({ ...livre, disponibilite: false });
-    } catch (err) {
-      setMsg(err.response?.data?.message || 'Erreur');
-    }
+  const handleEmprunter = () => {
+    navigate(`/livres/${id}/emprunt`);
   };
 
   const handleReserver = async () => {
