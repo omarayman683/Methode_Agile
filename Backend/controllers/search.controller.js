@@ -1,7 +1,12 @@
 const Groq = require('groq-sdk');
 const LivreModel = require('../models/livre.model');
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+// Instantiated lazily so dotenv has loaded by the time it's needed
+let groq;
+function getGroq() {
+    if (!groq) groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    return groq;
+}
 
 // 1. Simple keyword search
 exports.simpleSearch = async (req, res) => {
@@ -46,7 +51,7 @@ Sois concis (3-5 phrases maximum).`;
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.flushHeaders();
 
-        const stream = await groq.chat.completions.create({
+        const stream = await getGroq().chat.completions.create({
             model: 'llama-3.1-8b-instant',
             messages: [{ role: 'user', content: prompt }],
             stream: true,
