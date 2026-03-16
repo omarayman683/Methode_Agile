@@ -4,7 +4,7 @@ const AmendeModel   = require('../models/amende.model');
 
 exports.emprunter = async (req, res) => {
     try {
-        const { id_livre } = req.body;
+        const { id_livre, duration = 14 } = req.body;
         const id_utilisateur = req.user.id_utilisateur;
 
         const livre = await LivreModel.findById(id_livre);
@@ -19,7 +19,7 @@ exports.emprunter = async (req, res) => {
 
         const today  = new Date();
         const retour = new Date(today);
-        retour.setDate(retour.getDate() + 14);
+        retour.setDate(retour.getDate() + duration);
 
         const id = await EmpruntModel.create({
             id_livre,
