@@ -44,12 +44,12 @@ export default function App() {
 
         {/* Bibliothécaire + Admin */}
         <Route path="/gestion/livres" element={
-          <ProtectedRoute roles={['bibliothecaire', 'administrateur']}>
+          <ProtectedRoute roles={['bibliothecaire']}>
             <ManageBooksPage />
           </ProtectedRoute>
         } />
         <Route path="/gestion/emprunts" element={
-          <ProtectedRoute roles={['bibliothecaire', 'administrateur']}>
+          <ProtectedRoute roles={['bibliothecaire','administrateur']}>
             <ManageLoansPage />
           </ProtectedRoute>
         } />

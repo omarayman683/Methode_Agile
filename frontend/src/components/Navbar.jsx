@@ -23,26 +23,32 @@ export default function Navbar() {
         Bibliothèque
       </Link>
 
+      {/* Accès Adhérent */}
       {user?.role === 'adherent' && (
         <Link to="/historique" style={{ color: '#ccc', textDecoration: 'none' }}>Mes emprunts</Link>
       )}
 
-      {(user?.role === 'bibliothecaire' || user?.role === 'administrateur') && (
-        <>
-          <Link to="/gestion/livres"   style={{ color: '#ccc', textDecoration: 'none' }}>Livres</Link>
-          <Link to="/gestion/emprunts" style={{ color: '#ccc', textDecoration: 'none' }}>Emprunts</Link>
-        </>
+      {/* --- MODIFICATION ICI --- */}
+      {/* Seul le bibliothécaire voit le menu Livres */}
+      {user?.role === 'bibliothecaire' && (
+        <Link to="/gestion/livres" style={{ color: '#ccc', textDecoration: 'none' }}>Livres</Link>
       )}
 
+      {/* Le Bibliothécaire ET l'Admin voient les Emprunts */}
+      {(user?.role === 'bibliothecaire' || user?.role === 'administrateur') && (
+        <Link to="/gestion/emprunts" style={{ color: '#ccc', textDecoration: 'none' }}>Emprunts</Link>
+      )}
+
+      {/* Seul l'Admin voit le menu Utilisateurs */}
       {user?.role === 'administrateur' && (
         <Link to="/admin/utilisateurs" style={{ color: '#ccc', textDecoration: 'none' }}>Utilisateurs</Link>
       )}
+      {/* ------------------------ */}
 
       <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          title={isDark ? 'Passer en mode clair' : 'Passer en mode sombre'}
           style={{
             background: 'rgba(255,255,255,0.1)',
             border: '1px solid rgba(255,255,255,0.2)',
