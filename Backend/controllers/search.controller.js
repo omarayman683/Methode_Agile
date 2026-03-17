@@ -1,78 +1,89 @@
-const Groq = require('groq-sdk');
+const { Ollama } = require('ollama');
 const LivreModel = require('../models/livre.model');
 
-// Instantiated lazily so dotenv has loaded by the time it's needed
-let groq;
-function getGroq() {
-    if (!groq) groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    return groq;
-}
+// Initialisation d'Ollama avec l'URL de ton .env
+const ollama = new Ollama({ host: process.env.OLLAMA_URL || 'http://localhost:11434' });
 
-// 1. Simple keyword search
+/**
+ * 1. RECHERCHE SIMPLE (Mots-clés SQL)
+ */
 exports.simpleSearch = async (req, res) => {
     try {
         const { q } = req.query;
         if (!q) return res.status(400).json({ success: false, message: 'Paramètre q requis' });
+        
         const livres = await LivreModel.search(q);
         res.json({ success: true, data: livres });
     } catch (err) {
+        console.error('Erreur simpleSearch :', err);
         res.status(500).json({ success: false, message: 'Erreur serveur', error: err.message });
     }
 };
 
-// 2. AI search using Groq with streaming
+/**
+ * 2. RECHERCHE INTELLIGENTE (IA OLLAMA avec Contexte BDD)
+ */
 exports.aiSearch = async (req, res) => {
     try {
         const { query } = req.body;
         if (!query) return res.status(400).json({ success: false, message: 'Paramètre query requis' });
 
+        // On récupère tous les livres pour donner le contexte à l'IA
         const allBooks = await LivreModel.findAll();
 
+        // On transforme la liste des livres en texte lisible par l'IA
         const livresContext = allBooks.map(l =>
-            `- [ID:${l.id_livre}] "${l.titre}" de ${l.auteur} | Catégorie: ${l.categorie} | Résumé: ${l.resume}`
+            `- ID:${l.id_livre} | Titre: "${l.titre}" | Auteur: ${l.auteur} | Catégorie: ${l.categorie} | Résumé: ${l.resume}`
         ).join('\n');
 
-        const prompt = `Tu es un assistant de bibliothèque sympathique et helpful.
-Voici les livres disponibles dans notre bibliothèque :
+        const prompt = `Tu es un assistant bibliothécaire intelligent. 
+Voici la liste des livres actuellement disponibles dans notre base de données :
 
 ${livresContext}
 
 L'utilisateur te demande : "${query}"
 
-Réponds en français de manière naturelle et conversationnelle.
-Suggère les livres les plus pertinents en mentionnant leur titre et auteur.
-Si aucun livre ne correspond, dis-le gentiment et propose des alternatives.
-Sois concis (3-5 phrases maximum).`;
+INSTRUCTIONS :
+1. Analyse la demande : cherche des titres, des auteurs, ou des critères spécifiques (ex: une lettre particulière, un thème).
+2. Ne propose QUE des livres présents dans la liste ci-dessus.
+3. Si l'utilisateur demande "un livre avec un P", vérifie les titres de la liste.
+4. Réponds en français de manière naturelle et concise (3 à 5 phrases).
+5. Si aucun livre ne correspond, suggère-lui de reformuler sa recherche.`;
 
-        // Setup SSE headers for streaming
+        // Configuration des headers pour le streaming (Server-Sent Events)
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.flushHeaders();
 
-        const stream = await getGroq().chat.completions.create({
-            model: 'llama-3.1-8b-instant',
+        // Appel à Ollama en mode streaming
+        const stream = await ollama.chat({
+            model: 'phi3', // Modèle léger pour éviter les erreurs de mémoire
             messages: [{ role: 'user', content: prompt }],
             stream: true,
         });
 
-        for await (const chunk of stream) {
-            const token = chunk.choices[0]?.delta?.content || '';
+        // Envoi des morceaux (tokens) de réponse au frontend
+        for await (const part of stream) {
+            const token = part.message.content || '';
             if (token) {
                 res.write(`data: ${JSON.stringify({ token })}\n\n`);
             }
         }
 
+        // Signal de fin
         res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
         res.end();
 
     } catch (err) {
-        console.error('Erreur recherche IA :', err);
+        console.error('Erreur aiSearch avec Ollama :', err);
+        
         if (!res.headersSent) {
             return res.status(500).json({ success: false, message: 'Erreur serveur.' });
         }
-        res.write(`data: ${JSON.stringify({ error: 'Erreur serveur.' })}\n\n`);
+        
+        res.write(`data: ${JSON.stringify({ error: 'L\'IA a rencontré un problème.' })}\n\n`);
         res.end();
     }
 };
